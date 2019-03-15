@@ -41,14 +41,14 @@ class AuthController extends Controller
             ]);
 		}
 
-        if (! $token = auth('api')->attempt($credentials)) {
-            return response()->json([
-                'success' => false,
-                'info' => '邮箱/密码不正确！'
-            ]);
+        if ($token = auth('api')->attempt($credentials)) {
+            return $this->respondWithToken($token);
         }
 
-        return $this->respondWithToken($token);
+        return response()->json([
+            'success' => false,
+            'info' => '邮箱/密码不正确！'
+        ]);
     }
 
     /**

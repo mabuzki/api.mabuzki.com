@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
 
+use JWTAuth;
+
 class SignUpController extends Controller
 {
     /*
@@ -116,11 +118,14 @@ class SignUpController extends Controller
             // return $this->sendFailedResponse($errors->toArray(), self::HTTP_CODE_BAD_REQUEST);
         } else {
             event(new Registered($user = $this->create($request->all())));
-            // return $this->sendSuccessResponse();
+            $token = JWTAuth::fromUser($user);
             return Response::json(
 				[
 					'success' => true,
-					'info' => '注册成功'
+                    'info' => '注册成功, 正在引导登入',
+                    'userid' => $user['id'],
+                    'username' => $user['username'],
+                    'token' => $token
 				]
 			);
         }

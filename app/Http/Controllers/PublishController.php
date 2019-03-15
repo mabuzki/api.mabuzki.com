@@ -17,6 +17,9 @@ class PublishController extends Controller
 {
 	public function publish() {
 		header("Content-Type: text/html;charset=utf-8");
+
+		$user = auth('api')->user();
+
 		if( !Input::get('content') ) {
 			return Response::json(
 				[
@@ -185,7 +188,6 @@ class PublishController extends Controller
 		$attachment = implode(",",$attachment['image']);
 
 		$cover = isset($cover) ? $cover : '';
-		$user = auth('api')->user();
 
 		$article_id = \DB::table('articles')->insertGetId(
 			[
