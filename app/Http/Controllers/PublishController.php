@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 require( __DIR__ . './../../../vendor/autoload.php' );
 use ConsoleTVs\Profanity\Facades\Profanity;
-use Intervention\Image\ImageManager;
+// use Intervention\Image\ImageManager;
 
 class PublishController extends Controller
 {

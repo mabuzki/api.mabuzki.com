@@ -1,5 +1,4 @@
 <?php
-
 return [
 
     /*
@@ -11,11 +10,13 @@ return [
     | to accept any value.
     |
     */
-   
+    //leez
+    'exposedHeaders' => ['Authorization'],
+    //leez
     'supportsCredentials' => false,
     'allowedOrigins' => ['*'],
     'allowedOriginsPatterns' => [],
-    'allowedHeaders' => ['Content-Type', 'X-Requested-With'],
+    'allowedHeaders' => ['Content-Type', 'Authorization'],
     'allowedMethods' => ['*'],
     'exposedHeaders' => [],
     'maxAge' => 0,

@@ -8,6 +8,9 @@ use Auth;
 use Redirect, Response;
 use Illuminate\Support\Facades\Input;
 
+require( __DIR__ . './../../../vendor/autoload.php' );
+use ConsoleTVs\Profanity\Facades\Profanity;//过滤黄暴字符
+
 class SettingController extends Controller
 {
     public function profile()
@@ -55,29 +58,31 @@ class SettingController extends Controller
 		return view('setting/profile');
 	}
 
-	public function updateSettingProfile()
+	public function updateSettingProfile(Request $request)
 	{
-		if(!Auth::user()) {
+		$signature = $request::input('signature');
+
+		if( !Profanity::blocker( $signature )->clean() ) {
 			return Response::json(
 				[
 					'success' => false,
-					'info' => '你需要登录才能更新资料'
+					'info' => '请确保内容合法'
 				]
 			);
 		}
 
-		$signature = Input::get('signature');
-
 		$result = \DB::table('users_profile')
 			->where('username', Auth::user()->username)
 			->update(['bio' => $signature]);
-
-		return Response::json(
-			[
-				'success' => true,
-				'info' => '修改成功'
-			]
-		);
+		
+		if($result) {
+			return Response::json(
+				[
+					'success' => true,
+					'info' => '修改成功'
+				]
+			);
+		}		
 	}
 
 	public function exterior()

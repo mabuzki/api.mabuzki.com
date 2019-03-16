@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f312d8b1723442dd1abf8eaa5b40935",
+    "content-hash": "2e5baccbd43d761751a6175f2b76b9cd",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -889,6 +889,69 @@
             ],
             "description": "Highlight PHP code in terminal",
             "time": "2018-09-29T18:48:56+00:00"
+        },
+        {
+            "name": "jrean/laravel-user-verification",
+            "version": "v7.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jrean/laravel-user-verification.git",
+                "reference": "e0eb3a4e4442365bce26c5e16b4277cd7f6616d5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jrean/laravel-user-verification/zipball/e0eb3a4e4442365bce26c5e16b4277cd7f6616d5",
+                "reference": "e0eb3a4e4442365bce26c5e16b4277cd7f6616d5",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "5.8.*",
+                "php": ">=7.1.3"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.12",
+                "fzaninotto/faker": "^1.6",
+                "mockery/mockery": "^0.9.5",
+                "phpunit/phpunit": "^5.5",
+                "satooshi/php-coveralls": "^1.0",
+                "sllh/php-cs-fixer-styleci-bridge": "^2.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Jrean\\UserVerification\\UserVerificationServiceProvider"
+                    ],
+                    "aliases": {
+                        "UserVerification": "Jrean\\UserVerification\\Facades\\UserVerification"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jrean\\UserVerification\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jean Ragouin",
+                    "email": "go@askjong.com"
+                }
+            ],
+            "description": "User Email Verification For Laravel 5.*",
+            "keywords": [
+                "email activation",
+                "email verification",
+                "framework",
+                "laravel",
+                "user activation",
+                "user verification"
+            ],
+            "time": "2019-03-01T04:24:17+00:00"
         },
         {
             "name": "kylekatarnls/laravel-carbon-2",

@@ -14,6 +14,7 @@
         "ezyang/htmlpurifier": "^4.10",
         "fideloper/proxy": "^4.0",
         "jacobcyl/ali-oss-storage": "^2.1",
+        "jrean/laravel-user-verification": "^7.0",
         "kylekatarnls/laravel-carbon-2": "^1.0.0",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",

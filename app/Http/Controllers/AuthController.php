@@ -32,6 +32,13 @@ class AuthController extends Controller
      */
     public function login()
     {
+        if (!request('email') || !request('password')) {
+        	return response()->json([
+                'success' => false,
+                'info' => '表单不完整'
+            ]);
+        }
+
         $credentials = request(['email', 'password']);
         
         if (! $results = \DB::table('users')->where('email', request(['email']))->first() ) {
@@ -105,7 +112,7 @@ class AuthController extends Controller
             'username' => $user['username'],
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60
+            'expires_in' => auth('api')->factory()->getTTL() * 1
         ]);
     }
 }

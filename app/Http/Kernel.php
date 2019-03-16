@@ -20,8 +20,8 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
         // leez
-		//\Barryvdh\Cors\HandleCors::class,
-        \App\Http\Middleware\CrossHttp::class, // leez 跨域
+		\Barryvdh\Cors\HandleCors::class,
+        // \App\Http\Middleware\CrossHttp::class, // leez 跨域
         // leez
     ];
 
@@ -68,6 +68,8 @@ class Kernel extends HttpKernel
 		'jwt.auth' => 'Tymon\JWTAuth\Middleware\GetUserFromToken',
         'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
         'jwt.api.auth' => \App\Http\Middleware\AuthLoginCheck::class,
+
+        // 'refresh.token' => 'App\Http\Middleware\RefreshToken',
     ];
 
     /**

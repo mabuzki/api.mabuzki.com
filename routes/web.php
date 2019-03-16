@@ -27,18 +27,30 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	return $request->user();
 });
 
-Route::post('/auth/login', 'AuthController@login');
+// Route::post('/auth/login', 'AuthController@login');
 Route::post('/sign-up', 'SignUpController@register');
 
+// Route::group(['middleware' => 'refresh.token'], function() {
+// Route::post('/auth/refresh', 'AuthController@refresh');
+// });
+
+Route::group([
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+});
+
 Route::group(['middleware' => 'jwt.api.auth'], function() {
-// Route::group(['middleware' => 'auth:api'], function() {
 	Route::post('/publish', 'PublishController@publish');
 	Route::post('/upload/avatar', 'UploadController@avatar');
 	Route::post('/upload/banner', 'UploadController@banner');
 	Route::post('/upload/photo', 'UploadController@photo');
-	Route::post('/auth/logout', 'AuthController@logout');
-	Route::post('/auth/refresh', 'AuthController@refresh');
-	Route::post('/auth/me', 'AuthController@me');
+	// Route::post('/auth/logout', 'AuthController@logout');
+	// Route::post('/auth/refresh', 'AuthController@refresh');
+	// Route::post('/auth/me', 'AuthController@me');
 
 	Route::post('/matrix/setting-profile', 'MatrixController@getProfile');
 	Route::post('/matrix/setting-account', 'MatrixController@getAccount');
@@ -52,3 +64,7 @@ Route::group(['middleware' => 'jwt.api.auth'], function() {
 // });
 
 // Route::any('{all}', function(){ App::abort(404); });
+
+// Auth::routes();
+
+// Route::get('/home', 'HomeController@index')->name('home');
