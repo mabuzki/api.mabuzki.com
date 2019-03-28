@@ -111,8 +111,9 @@ class SignUpController extends Controller
         if (!empty($errors->all())) {
             return Response::json(
 				[
-					'success' => false,
-                    'info' => $errors->toArray()
+                    'success' => false,
+                    'info' => '注册失败',
+                    'extra' => $errors->toArray()
 				]
 			);
             // return $this->sendFailedResponse($errors->toArray(), self::HTTP_CODE_BAD_REQUEST);
