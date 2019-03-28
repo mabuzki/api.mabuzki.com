@@ -69,7 +69,7 @@ class Kernel extends HttpKernel
         'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
         'jwt.api.auth' => \App\Http\Middleware\AuthLoginCheck::class,
 
-        // 'refresh.token' => 'App\Http\Middleware\RefreshToken',
+        // 'jwt.refresh.token' => '\App\Http\Middleware\RefreshToken',
     ];
 
     /**

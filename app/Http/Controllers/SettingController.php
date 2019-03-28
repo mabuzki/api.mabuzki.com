@@ -15,7 +15,7 @@ class SettingController extends Controller
 {
     public function profile()
 	{
-		if(!Auth::user()) return view('auth/login', ['needlogin' => true, 'refresh' => true]);
+		// if(!Auth::user()) return view('auth/login', ['needlogin' => true, 'refresh' => true]);
 
 		// $results = \DB::table('users_profile')->where('id', Auth::user()->id)->first();
 		// $results = json_decode(json_encode($results), True);
@@ -75,14 +75,21 @@ class SettingController extends Controller
 			->where('username', Auth::user()->username)
 			->update(['bio' => $signature]);
 		
-		if($result) {
+		if( $result ) {
 			return Response::json(
 				[
 					'success' => true,
 					'info' => '修改成功'
 				]
 			);
-		}		
+		}
+
+		return Response::json(
+			[
+				'success' => true,
+				'info' => '内容无修改'
+			]
+		);
 	}
 
 	public function exterior()

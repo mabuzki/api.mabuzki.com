@@ -25,7 +25,7 @@ class CreateUsersProfileTable extends Migration
 			$table->string('bloodtype')->default('');
 			$table->string('height')->default('');
 			$table->string('weight')->default('');
-			$table->string('bio')->default('');
+			$table->string('bio')->default()->nullable();
 			$table->string('banner')->default('');
             $table->tinyInteger('status')->default(0);
         });

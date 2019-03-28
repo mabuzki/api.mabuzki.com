@@ -10,15 +10,12 @@ return [
     | to accept any value.
     |
     */
-    //leez
-    'exposedHeaders' => ['Authorization'],
-    //leez
     'supportsCredentials' => false,
     'allowedOrigins' => ['*'],
     'allowedOriginsPatterns' => [],
-    'allowedHeaders' => ['Content-Type', 'Authorization'],
+    'allowedHeaders' => ['Content-Type', 'Authorization','multipart/form-data'],
     'allowedMethods' => ['*'],
-    'exposedHeaders' => [],
+    'exposedHeaders' => ['Authorization'],
     'maxAge' => 0,
 
 ];

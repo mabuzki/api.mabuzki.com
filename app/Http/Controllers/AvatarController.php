@@ -72,33 +72,34 @@ class AvatarController extends Controller
 				break;
 		}
 
-		if (!\DB::table('users')->where('id', $id)->first()) {
-			return '查无此人';
-		}
-
 		$avatar = get_avatar($id, $size);
-
 		$home = get_home($id);
 
-		if(!is_dir(public_path().'/uploads/')) {
-			File::makeDirectory( public_path().'/uploads/',  $mode = 0777, $recursive = false);
-		}
-
-		if(!is_dir(public_path().'/uploads/avatars/')) {
-			File::makeDirectory( public_path().'/uploads/avatars/',  $mode = 0777, $recursive = false);
-		}
-
-		if(!is_dir(public_path().'/uploads/avatars/'.$home)) {
-			set_home($id, public_path().'/uploads/avatars/');
-		}
-
 		if(!file_exists(public_path().'/uploads/avatars/'.$avatar)) {
-			$id = abs(intval($id));
-			$id = sprintf("%09d", $id);
 
 			$results = \DB::table('users')->where('id', $id)->first();
+			if(!$results) {
+				echo '<img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">';
+				header('Content-type:image/png');
+				
+				exit;
+			}
 			$results = json_decode(json_encode($results), True);
 
+			if(!is_dir(public_path().'/uploads/')) {
+				File::makeDirectory( public_path().'/uploads/',  $mode = 0777, $recursive = false);
+			}
+	
+			if(!is_dir(public_path().'/uploads/avatars/')) {
+				File::makeDirectory( public_path().'/uploads/avatars/',  $mode = 0777, $recursive = false);
+			}
+	
+			if(!is_dir(public_path().'/uploads/avatars/'.$home)) {
+				set_home($id, public_path().'/uploads/avatars/');
+			}
+
+			$id = abs(intval($id));
+			$id = sprintf("%09d", $id);
 			$aavatar = new InitialAvatar();
 			$background = RandomColor::one(array('format'=>'hex','hue'=>array('blue', 'purple','red') ));
 
@@ -139,7 +140,6 @@ class AvatarController extends Controller
 			$test->make($image_s)->resize(36, 36)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_small').'.png', 100);
 			$test->make($image_m)->resize(128, 128)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_medium').'.png', 100);
 			$test->make($image_l)->resize(180, 180)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_large').'.png', 100);
-
 		}
 
 		$random = !empty($random) ? rand(1000, 9999) : '';

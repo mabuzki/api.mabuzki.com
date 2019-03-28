@@ -43,18 +43,18 @@ Route::group([
     Route::post('me', 'AuthController@me');
 });
 
+// Route::group(['middleware' => 'jwt.refresh.token'], function() {
 Route::group(['middleware' => 'jwt.api.auth'], function() {
 	Route::post('/publish', 'PublishController@publish');
 	Route::post('/upload/avatar', 'UploadController@avatar');
 	Route::post('/upload/banner', 'UploadController@banner');
 	Route::post('/upload/photo', 'UploadController@photo');
-	// Route::post('/auth/logout', 'AuthController@logout');
-	// Route::post('/auth/refresh', 'AuthController@refresh');
-	// Route::post('/auth/me', 'AuthController@me');
-
 	Route::post('/matrix/setting-profile', 'MatrixController@getProfile');
 	Route::post('/matrix/setting-account', 'MatrixController@getAccount');
 	Route::post('/setting/profile/update', 'SettingController@updateSettingProfile');
+});
+
+Route::group(['middleware' => 'jwt.api.auth'], function() {
 });
 
 // Route::group([

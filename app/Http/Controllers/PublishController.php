@@ -236,7 +236,8 @@ class PublishController extends Controller
 			return Response::json(
 				[
 					'success' => 1,
-					'article_id' => $article_id
+					'article_id' => $article_id,
+					'info' => '发表成功，即将跳转文章页面'
 				]
 			);
 			// foreach ($image_id as $key => $value) {
