@@ -19,6 +19,15 @@ class PublishController extends Controller
 		header("Content-Type: text/html;charset=utf-8");
 
 		$user = auth('api')->user();
+		
+		if ( !$user['email_verified_at'] ) {
+			return Response::json(
+				[
+					'success' => false,
+					'info' => '未认证账号不能发表文章'
+				]
+			);
+		}
 
 		if( !Input::get('content') ) {
 			return Response::json(
@@ -89,9 +98,6 @@ class PublishController extends Controller
 					$value = (string)$image_src -> nodeValue;
 				}
 				preg_match('/([^imageid=]+)\)/i', $value, $match);
-
-				dd($match);
-
 
 				$newelement = $dom->createTextNode(':PiCiD#'.$match[1].':');
 				// $node->replaceChild( $newelement , $node->firstChild );

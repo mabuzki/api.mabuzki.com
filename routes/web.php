@@ -18,21 +18,18 @@ Route::get('/banner/{uid}/{size}', 'BannerController@show');
 Route::get('/photo/{picid}/{size}', 'AttachController@show');
 
 // json back
-Route::get('/matrix/article-{article_id}', 'MatrixController@getArticle');
-Route::get('/matrix/comment-{article_id}', 'MatrixController@getComment');
+Route::get('/article/{article_id}', 'MatrixController@getArticle');
+Route::get('/articles-new', 'MatrixController@getArticles');
+Route::get('/comment-{article_id}', 'MatrixController@getComment');
 
-Route::get('/matrix/user-profile/{uid}', 'MatrixController@getUserProfile');
+Route::get('/user-profile/{uid}', 'MatrixController@getUserProfile');
+Route::get('/user-article/{uid}/{page}', 'MatrixController@getUserArticle');
  
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-	return $request->user();
-});
-
-// Route::post('/auth/login', 'AuthController@login');
-Route::post('/sign-up', 'SignUpController@register');
-
-// Route::group(['middleware' => 'refresh.token'], function() {
-// Route::post('/auth/refresh', 'AuthController@refresh');
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+// 	return $request->user();
 // });
+
+Route::post('/sign-up', 'SignUpController@register');
 
 Route::group([
     'prefix' => 'auth'
@@ -43,28 +40,12 @@ Route::group([
     Route::post('me', 'AuthController@me');
 });
 
-// Route::group(['middleware' => 'jwt.refresh.token'], function() {
 Route::group(['middleware' => 'jwt.api.auth'], function() {
 	Route::post('/publish', 'PublishController@publish');
 	Route::post('/upload/avatar', 'UploadController@avatar');
 	Route::post('/upload/banner', 'UploadController@banner');
 	Route::post('/upload/photo', 'UploadController@photo');
-	Route::post('/matrix/setting-profile', 'MatrixController@getProfile');
-	Route::post('/matrix/setting-account', 'MatrixController@getAccount');
-	Route::post('/setting/profile/update', 'SettingController@updateSettingProfile');
+	Route::post('/setting-profile', 'MatrixController@getProfile');
+	Route::post('/setting-account', 'MatrixController@getAccount');
+	Route::post('/setting-profile-update', 'SettingController@updateSettingProfile');
 });
-
-Route::group(['middleware' => 'jwt.api.auth'], function() {
-});
-
-// Route::group([
-//	 'prefix' => 'auth'
-// ], function ($router) {
-	
-// });
-
-// Route::any('{all}', function(){ App::abort(404); });
-
-// Auth::routes();
-
-// Route::get('/home', 'HomeController@index')->name('home');

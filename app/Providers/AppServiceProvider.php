@@ -24,5 +24,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+        //leez
+        \Carbon\Carbon::setLocale('zh');
+        //leez
     }
 }

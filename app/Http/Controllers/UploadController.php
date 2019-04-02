@@ -308,6 +308,15 @@ class UploadController extends Controller
 	{
 		$user = auth('api')->user();
 		$id = $user['id'];
+		
+		if ( !$user['email_verified_at'] ) {
+			return Response::json(
+				[
+					'success' => false,
+					'info' => '未认证账号不能上传图片'
+				]
+			);
+		}
 
 		$dir = get_target_dir( 'photo' );
 		$fileName = get_target_filename( $id );
