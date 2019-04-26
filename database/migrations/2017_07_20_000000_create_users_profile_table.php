@@ -16,6 +16,7 @@ class CreateUsersProfileTable extends Migration
         Schema::create('users_profile', function (Blueprint $table) {
             $table->increments('id');
             $table->string('username');
+			$table->string('avatar')->default('');
 			$table->tinyInteger('gender')->default(0);
 			$table->smallInteger('level')->default(0);
 			$table->string('location')->default('');
@@ -25,7 +26,7 @@ class CreateUsersProfileTable extends Migration
 			$table->string('bloodtype')->default('');
 			$table->string('height')->default('');
 			$table->string('weight')->default('');
-			$table->string('bio')->default()->nullable();
+			$table->string('signature')->default()->nullable();
 			$table->string('banner')->default('');
             $table->tinyInteger('status')->default(0);
         });

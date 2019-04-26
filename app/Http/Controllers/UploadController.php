@@ -10,38 +10,18 @@ use Illuminate\Support\Facades\Input;
 use File;
 
 require(__DIR__ . './../../../vendor/autoload.php');
-use Intervention\Image\ImageManager;
+// use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Storage;
 
-function set_home($id, $dir = '.') {
-	$id = sprintf("%09d", $id);
-	$dir1 = substr($id, 0, 3);
-	$dir2 = substr($id, 3, 2);
-	$dir3 = substr($id, 5, 2);
-
-	!is_dir($dir.'/'.$dir1) && File::makeDirectory($dir.'/'.$dir1,  $mode = 0777, $recursive = false);
-	!is_dir($dir.'/'.$dir1.'/'.$dir2) && File::makeDirectory($dir.'/'.$dir1.'/'.$dir2,  $mode = 0777, $recursive = false);
-	!is_dir($dir.'/'.$dir1.'/'.$dir2.'/'.$dir3) && File::makeDirectory($dir.'/'.$dir1.'/'.$dir2.'/'.$dir3,  $mode = 0777, $recursive = false);
-}
-
-function get_home($id) {
+function get_resource($id) {
 	$id = abs(intval($id));
 	$id = sprintf("%09d", $id);
 	$dir1 = substr($id, 0, 3);
 	$dir2 = substr($id, 3, 2);
-	$dir3 = substr($id, 5, 2);
-
-	return $dir1.'/'.$dir2.'/'.$dir3;
+    $dir3 = substr($id, 5, 2);
+    $rand = str_random(random_int(20,30));
+	return $dir1.'/'.$dir2.'/'.$dir3.'/'.substr($id, -2)."_".$rand.".png";
 }
-
-function linkSRC() {
-	var_dump(env('REMOTE'));
-}
-
-// function get_target_extension($ext) {
-// 	static $safeext  = array('attach', 'jpg', 'jpeg', 'gif', 'png', 'swf', 'bmp', 'txt', 'zip', 'rar', 'mp3');
-// 	return strtolower(!in_array(strtolower($ext), $safeext) ? 'attach' : $ext);
-// }
 
 function check_dir_type( $type ) {
 	return !in_array($type, array('blog', 'photo', 'video', 'tmp', 'avatar', 'banner')) ? 'tmp' : $type;
@@ -168,7 +148,6 @@ class UploadController extends Controller
 
 		$file = Input::file('Filedata');
 		
-		
 		if(!$file) {
 			return Response::json(
 				[
@@ -176,12 +155,6 @@ class UploadController extends Controller
 					'info' => '文件上传错误！'
 				]
 			);
-		}
-
-		$home = get_home($id);
-
-		if(!is_dir(public_path().'/uploads/avatars/'.$home)) {
-			set_home($id, public_path().'/uploads/avatars/');
 		}
 
 		$mime = $file->getMimeType();
@@ -192,34 +165,37 @@ class UploadController extends Controller
 					'info' => '请上传 png, jpg 或者 gif格式的图片'
 				]
 			);
-		}		
+		}
+
+		$profile = \DB::table('users_profile')
+            ->where('id', $id)
+            ->first();
+
+		$profile = json_decode(json_encode($profile), true);
 
 		$destinationPath = 'uploads/tmp/avatar/';
 		$extension = $file->getClientOriginalExtension();
 
 		$fileName = str_pad($id,7,"0",STR_PAD_LEFT).'.'.$extension;
 		$file->move($destinationPath, $fileName);
-		
-		$small = url('/avatar/'.$id.'/0?r='.mt_rand(1000000, 9999999));
-		$link = url('/avatar/'.$id.'/2?r='.mt_rand(1000000, 9999999));
-		
-		$id = abs(intval($id));
-		$id = sprintf("%09d", $id);
-	
-		$Avatar = new ImageManager();
-		$result_s = $Avatar->make($destinationPath.$fileName)->resize(36, 36)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_tiny').'.png', 100);
-		$result_s = $Avatar->make($destinationPath.$fileName)->resize(36, 36)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_small').'.png', 100);
-		$result_m = $Avatar->make($destinationPath.$fileName)->resize(110, 110)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_medium').'.png', 100);
-		$result_l = $Avatar->make($destinationPath.$fileName)->resize(180, 180)->save(public_path().'/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_'.config('mabuzki.avatar_large').'.png', 100);
 
-		if ($result_s && $result_m && $result_l) {
+		$avatar = get_resource($user->id);
+		$resource = 'avatar/'.$avatar;
+		
+		$result = Storage::put( $resource, file_get_contents( $destinationPath.$fileName ) );
+		if($result) {
+			\DB::table('users_profile')
+                ->where('id', $id)
+                ->update([
+                    'avatar' => $avatar
+				]);
+			Storage::delete('avatar/'.$profile['avatar']);
+			@unlink( $destinationPath.$fileName );
 			return Response::json(
 				[
 					'success' => true,
-					// 'id' => $id,
-					'small' => $small,
-					'link' => $link
-					// 'link' => asset('/uploads/avatars/'.$home.'/'.substr($id, -2).'_avatar_m110x110.png?r='.mt_rand(1000000, 9999999))
+					'info' => '修改成功',
+					'newAvatar' => $avatar
 				]
 			);
 		}
@@ -356,18 +332,16 @@ class UploadController extends Controller
 		$result = Storage::put( $path, file_get_contents( $file->getRealPath() ) ); // true
 
 		if( $result ) {
-			$imageid = \DB::table('photos')->insertGetId(
+			$imageid = \DB::table('attachments')->insertGetId(
 				[
 					'userid' => $user['id'],
 					'username' => $user['username'],
-					'article_id' => '',
-					'article_type' => '',
+					'type' => '',
 					'filepath' => $dir,
 					'filename' => $fileName,
 					'salt' => $salt,
 					'suffix' => $extension,
 					'animated' => $animated,
-					'caption' => '',
 					'width' => $info[0],
 					'height' => $info[1],
 					'postip' => Request::getClientIp(),
@@ -434,7 +408,7 @@ class UploadController extends Controller
 		// 	// $im->destroy();
 
 		// 	if ( $result ) { // 生成缩略图succeed
-		// 		$imageid = \DB::table('photos')->insertGetId(
+		// 		$imageid = \DB::table('attachments')->insertGetId(
 		// 			[
 		// 				'userid' => $user['id'],
 		// 				'username' => $user['username'],

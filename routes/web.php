@@ -12,7 +12,7 @@
 */
 
 // image get
-Route::get('/avatar/{uid}/{size}', 'AvatarController@show');
+Route::get('/avatar/{uid}/{size}/{cacheKey}', 'AvatarController@show');
 Route::get('/banner/{uid}/{size}', 'BannerController@show');
 // Route::get('/upload/{type}', function(){ App::abort(404); });
 Route::get('/photo/{picid}/{size}', 'AttachController@show');
@@ -42,6 +42,7 @@ Route::group([
 
 Route::group(['middleware' => 'jwt.api.auth'], function() {
 	Route::post('/publish', 'PublishController@publish');
+	Route::post('/comment', 'CommentController@post');
 	Route::post('/upload/avatar', 'UploadController@avatar');
 	Route::post('/upload/banner', 'UploadController@banner');
 	Route::post('/upload/photo', 'UploadController@photo');

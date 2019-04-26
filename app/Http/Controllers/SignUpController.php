@@ -13,6 +13,23 @@ use Illuminate\Auth\Events\Registered;
 
 use JWTAuth;
 
+require(__DIR__ . './../../../vendor/autoload.php');
+use LasseRafn\InitialAvatarGenerator\InitialAvatar;
+use LasseRafn\StringScript;
+use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Storage;
+use \Colors\RandomColor;
+
+function get_avatar($id) {
+	$id = abs(intval($id));
+	$id = sprintf("%09d", $id);
+	$dir1 = substr($id, 0, 3);
+	$dir2 = substr($id, 3, 2);
+    $dir3 = substr($id, 5, 2);
+    $rand = str_random(random_int(20,30));
+	return $dir1.'/'.$dir2.'/'.$dir3.'/'.substr($id, -2)."_".$rand.".png";
+}
+
 class SignUpController extends Controller
 {
     /*
@@ -112,7 +129,7 @@ class SignUpController extends Controller
             return Response::json(
 				[
 					'success' => false,
-                    'info' => $errors->toArray()
+                    'extra' => $errors->toArray()
 				]
 			);
             // return $this->sendFailedResponse($errors->toArray(), self::HTTP_CODE_BAD_REQUEST);
@@ -125,6 +142,7 @@ class SignUpController extends Controller
                     'info' => '注册成功, 正在引导登入',
                     'userid' => $user['id'],
                     'username' => $user['username'],
+                    'needverify' => true,
                     'token' => $token
 				]
 			);
@@ -153,9 +171,36 @@ class SignUpController extends Controller
 
         if($user->wasRecentlyCreated){
             $tmp = json_decode(json_encode($user), True);
-            \DB::table('users_profile')->insert(
+            \DB::table('users_profile')->insertGetId(
                 ['username' => $tmp['username']]
             );
+
+            $avatar = get_avatar($user->id);
+            $resource = 'avatar/'.$avatar;
+            $background = RandomColor::one(array('format'=>'hex','hue'=>array('blue', 'purple','red') ));
+
+            $IA = new InitialAvatar();
+            $new_avatar = $IA
+                ->autoFont()
+                ->name($tmp['username'])
+                ->background($background)
+                ->size(180)
+                ->fontSize(0.35)
+                ->generate()
+                ->stream('png', 100);
+
+            $Image = new ImageManager();
+            $path = public_path().'/uploads/avatars/'.$avatar;
+            $Image->make($new_avatar)->resize(180, 180)->save($path, 100);
+            $result = Storage::put( $resource, file_get_contents( $path ) );
+            if($result) {
+                \DB::table('users_profile')
+                    ->where('id', $tmp['id'])
+                    ->update([
+                        'avatar' => $avatar
+                    ]);
+                @unlink( $path );
+            }
         }
 
         return $user;

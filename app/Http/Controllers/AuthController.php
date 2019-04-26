@@ -105,11 +105,20 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         $user = auth('api')->user();
+
+        $profile = \DB::table('users_profile')
+            ->where('id', $user['id'])
+            ->first();
+
+        $profile = json_decode(json_encode($profile), true);
+
         return response()->json([
             'success' => true,
             'info' => '登陆成功',
             'userid' => $user['id'],
+            'avatar' => $profile['avatar'],
             'username' => $user['username'],
+            'needverify' => $user['email_verified_at'] ? false : true,
             'token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 1

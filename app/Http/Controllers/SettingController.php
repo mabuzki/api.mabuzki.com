@@ -73,7 +73,7 @@ class SettingController extends Controller
 
 		$result = \DB::table('users_profile')
 			->where('username', Auth::user()->username)
-			->update(['bio' => $signature]);
+			->update(['signature' => $signature]);
 		
 		if( $result ) {
 			return Response::json(

@@ -65,6 +65,12 @@ return [
         ],
 
         // leez
+		'admin' => [
+			'driver'     => 'local',
+			'root'       => public_path('upload'),
+			'visibility' => 'public',
+			'url' => env('APP_URL').'/public/upload/',
+		],
         'oss' => [
             'driver'        => 'oss',
             'access_id'     => 'LTAI5q4yMIMuWBaT',

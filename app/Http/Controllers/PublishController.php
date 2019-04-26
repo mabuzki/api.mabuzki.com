@@ -81,7 +81,6 @@ class PublishController extends Controller
 
 		$finder = new \DomXPath($dom);
 		$nodes = $finder->query('//figure');
-		// $fakes = $finder->query('//p[@class="fake"]');
 		$tmp = null;
 		// $attachment['node'] = array();
 		$attachment['image'] = array();
@@ -89,85 +88,29 @@ class PublishController extends Controller
 
 		if( $nodes->length ) {
 			foreach ($nodes as $key => $node) {
-				//dd($node->firstChild->nodeType); //1
-				//dd($node->nodeValue); //图片的caption
-
 				$img = $node->getElementsByTagName('img')->item(0);
-				$image_src = $img->attributes->getNamedItem('src');
-				if ( !empty( $image_src ) ) {
-					$value = (string)$image_src -> nodeValue;
+				$caption = $node->getElementsByTagName('figcaption')->item(0)->textContent;
+				if ( $imageid = $img->attributes->getNamedItem('data-image-id') ) {
+					$value = (string)$imageid->value;
+					if ( $caption ) {
+						$newelement = $dom->createTextNode('[picid='.$value.']'.$caption.'[/picid]');
+					} else {
+						$newelement = $dom->createTextNode('[picid='.$value.'][/picid]');
+					}
+					$node->parentNode->replaceChild( $newelement , $node );
+					// $node->parentNode->removeChild( $newelement , $node );
+					array_push( $attachment['image'], $value );
 				}
-				preg_match('/([^imageid=]+)\)/i', $value, $match);
-
-				$newelement = $dom->createTextNode(':PiCiD#'.$match[1].':');
-				// $node->replaceChild( $newelement , $node->firstChild );
-				$node->replaceChild( $newelement , $node->firstChild );
-				$node->parentNode->removeChild( $newelement , $node );
-				array_push( $attachment['image'], $match[1] );
 			}
-
-			// $images = \DB::table('photos')->whereIn('filename',$attachment['filename'])->get();
-			// $images = json_decode( json_encode($images) , True );
-			// dd($images);
-			// Collection {#297
-			// 	#items: array:2 [
-			// 	  0 => {#301
-			// 		+"id": 4
-			// 		+"article_id": ""
-			// 		+"article_type": ""
-			// 		+"userid": "1"
-			// 		+"username": "抹布斯基"
-			// 		+"filepath": "201811/17/"
-			// 		+"filename": "210210_0000001_3DB7iqOBQXVR3hz_xBci_cDWR_uxsL"
-			// 		+"caption": ""
-			// 		+"salt": "WQdejS6ofZru"
-			// 		+"suffix": "png"
-			// 		+"animated": "0"
-			// 		+"width": 239
-			// 		+"height": 149
-			// 		+"postip": "127.0.0.1"
-			// 		+"upload_time": "1542459731"
-			// 	  }
-			// 	  1 => {#296
-			// 		+"id": 5
-			// 		+"article_id": ""
-			// 		+"article_type": ""
-			// 		+"userid": "1"
-			// 		+"username": "抹布斯基"
-			// 		+"filepath": "201811/17/"
-			// 		+"filename": "210216_0000001_ywpLYPi5WZUSFO0_g4XZ_UICT_vKro"
-			// 		+"caption": ""
-			// 		+"salt": "4oSKT6hUIpP3"
-			// 		+"suffix": "png"
-			// 		+"animated": "0"
-			// 		+"width": 140
-			// 		+"height": 140
-			// 		+"postip": "127.0.0.1"
-			// 		+"upload_time": "1542459736"
-			// 	  }
-			// 	]
-			//   }
-
-			// foreach ($nodes as $key => $node) {
-			// 	$img = $node->getElementsByTagName('img')->item(0);
-			// 	// $caption = $node->getElementsByTagName('figcaption')->item(0);
-			// 	$image_src = $img->attributes->getNamedItem('src');
-
-			// 	if ( !empty( $image_src ) ) {
-			// 		$image_src = $img->attributes->getNamedItem('src');
-			// 		$value = (string)$image_src -> nodeValue;
-			// 		preg_match('/\/[0-9][0-9]\/([^.]+)__/i', $value, $match);
-			// 		foreach ($images as $key => $image) {
-			// 			if($match[1] == $image['filename']) {
-			// 				$newelement = $dom->createTextNode(':PiCiD#'.$image['id'].':');
-			// 				$img->parentNode->replaceChild( $newelement , $img );
-			// 				array_push( $attachment['image'], $image['id'] );
-			// 				break;
-			// 			}
-			// 		}
-			// 	}
-			// }
 		}
+
+		// $br = $finder->query('//br[@data-mce-bogus="1"]');
+		// dd($br);
+		// $test = $finder->query('//br[@data-mce-bogus="1"]');
+		// if ( $br -> length ) {
+		// 	dd($br->parentNode);
+		// 	$br->parentNode->parentNode->removeChild( $br->parentNode );
+		// }
 
 		// dd($content);
 
@@ -177,13 +120,13 @@ class PublishController extends Controller
 		// 	}
 		// }
 		
-		// $content = '';
-		// if ( $dom->documentElement ) {
-		// 	$tmp = $dom->documentElement->getElementsByTagName('body')->item(0)->childNodes;
-		// 	foreach ($tmp as $child) {
-		// 		$content .= $child->ownerDocument->saveXML( $child );
-		// 	}
-		// }
+		$content = '';
+		if ( $dom->documentElement ) {
+			$tmp = $dom->documentElement->getElementsByTagName('body')->item(0)->childNodes;
+			foreach ($tmp as $child) {
+				$content .= $child->ownerDocument->saveXML( $child );
+			}
+		}
 
 		
 		// $content = addslashes( $content );
@@ -218,7 +161,7 @@ class PublishController extends Controller
 
 			// if ( !empty($tmp) ) { // 封面处理
 			
-			// 	$cover_query = \DB::table('photos')->where('id', $tmp)->first();
+			// 	$cover_query = \DB::table('attachments')->where('id', $tmp)->first();
 			// 	$cover_query = json_decode(json_encode($cover_query), True);
 			// 	$destinationPath = 'uploads/photo/'.$cover_query['filepath'].$cover_query['filename'].'__'.$cover_query['salt'].'.'.$cover_query['suffix'];
 			// 	$path = realpath($destinationPath);
@@ -247,7 +190,7 @@ class PublishController extends Controller
 				]
 			);
 			// foreach ($image_id as $key => $value) {
-			// 	\DB::table('photos')
+			// 	\DB::table('attachments')
 			// 		->where('id', $value)
 			// 		->update(['article_id' => $article_id]);
 			// }
