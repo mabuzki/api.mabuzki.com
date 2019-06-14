@@ -12,14 +12,14 @@
 */
 
 // image get
-Route::get('/avatar/{uid}/{size}/{cacheKey}', 'AvatarController@show');
-Route::get('/banner/{uid}/{size}', 'BannerController@show');
+// Route::get('/avatar/{uid}/{size}/{cacheKey}', 'AvatarController@show');
+// Route::get('/banner/{uid}/{size}', 'BannerController@show');
 // Route::get('/upload/{type}', function(){ App::abort(404); });
-Route::get('/photo/{picid}/{size}', 'AttachController@show');
+// Route::get('/photo/{picid}/{size}', 'AttachController@show');
 
 // json back
 Route::get('/article/{article_id}', 'MatrixController@getArticle');
-Route::get('/articles-new', 'MatrixController@getArticles');
+Route::get('/articles-new/{page}', 'MatrixController@getArticles');
 Route::get('/comment-{article_id}', 'MatrixController@getComment');
 
 Route::get('/user-profile/{uid}', 'MatrixController@getUserProfile');

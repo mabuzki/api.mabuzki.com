@@ -167,29 +167,33 @@ class UploadController extends Controller
 			);
 		}
 
-		$profile = \DB::table('users_profile')
-            ->where('id', $id)
-            ->first();
+		// $profile = \DB::table('users_profile')
+        //     ->where('id', $id)
+        //     ->first();
 
-		$profile = json_decode(json_encode($profile), true);
+		// $profile = json_decode(json_encode($profile), true);
 
-		$destinationPath = 'uploads/tmp/avatar/';
+		$destinationPath = public_path().'uploads/tmp/avatar/';
 		$extension = $file->getClientOriginalExtension();
 
 		$fileName = str_pad($id,7,"0",STR_PAD_LEFT).'.'.$extension;
 		$file->move($destinationPath, $fileName);
 
-		$avatar = get_resource($user->id);
+		$avatar = get_resource($id);
 		$resource = 'avatar/'.$avatar;
-		
+
+		$oldavatar = 'avatar/'.$user['avatar'];
+		// 删除旧头像
+		Storage::delete($oldavatar);
+		//上传到oss
 		$result = Storage::put( $resource, file_get_contents( $destinationPath.$fileName ) );
 		if($result) {
-			\DB::table('users_profile')
+			\DB::table('users')
                 ->where('id', $id)
                 ->update([
                     'avatar' => $avatar
 				]);
-			Storage::delete('avatar/'.$profile['avatar']);
+			// Storage::delete($resource);
 			@unlink( $destinationPath.$fileName );
 			return Response::json(
 				[
@@ -335,7 +339,6 @@ class UploadController extends Controller
 			$imageid = \DB::table('attachments')->insertGetId(
 				[
 					'userid' => $user['id'],
-					'username' => $user['username'],
 					'type' => '',
 					'filepath' => $dir,
 					'filename' => $fileName,

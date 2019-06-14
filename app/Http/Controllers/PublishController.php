@@ -51,9 +51,16 @@ class PublishController extends Controller
 		}
 
 		$content = Input::get('content');
+
+		// 利用HTMLPurifier 过滤 html标签， 防止xss
+		$content = clean($content);
+
+		// 检测用户是否提交空内容
 		$content_tmp = str_replace(array(" ","　","\t","\n","\r"), "", $content);
 		$content_tmp = str_replace(array("&nbsp;",chr(194).chr(160)), "", $content_tmp);
 		$content_tmp = str_replace(array("<p>","</p>","<span>","</span>","<div>","</div>"), "", $content_tmp);
+		$content_tmp = strip_tags($content_tmp, "<img> <gallery> <video>");
+
 		if( strlen( $content_tmp ) < 10 ) {
 			return Response::json(
 				[
@@ -133,20 +140,18 @@ class PublishController extends Controller
 		// $content = addslashes( htmlentities($content, ENT_QUOTES, 'UTF-8') );
 		// dd($content);
 
-		@$tags = isset($tags) ? implode(",",$tags) : '';
+		@$tags = isset($tags) ? explode(",",$tags) : '';
 		$attachment = implode(",",$attachment['image']);
 
 		$cover = isset($cover) ? $cover : '';
 
 		$article_id = \DB::table('articles')->insertGetId(
 			[
-				'author' => $user['username'],
 				'authorid' => $user['id'],
 				'type' => '',
 				'subject' => $subject,
 				'cover' => '',
 				'content' => $content,
-				// 'attachment' => '',
 				'attachment' => $attachment,
 				'tags' => $tags,
 				'readtimes' => 0,

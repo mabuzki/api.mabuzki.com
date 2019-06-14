@@ -62,6 +62,8 @@ class SettingController extends Controller
 	{
 		$signature = $request::input('signature');
 
+		$user = auth('api')->user();
+
 		if( !Profanity::blocker( $signature )->clean() ) {
 			return Response::json(
 				[
@@ -72,7 +74,7 @@ class SettingController extends Controller
 		}
 
 		$result = \DB::table('users_profile')
-			->where('username', Auth::user()->username)
+			->where('id', $user['id'])
 			->update(['signature' => $signature]);
 		
 		if( $result ) {

@@ -136,12 +136,20 @@ class SignUpController extends Controller
         } else {
             event(new Registered($user = $this->create($request->all())));
             $token = JWTAuth::fromUser($user);
+
+            $profile = \DB::table('users')
+            ->where('id', $user['id'])
+            ->first();
+
+            $profile = json_decode(json_encode($profile), true);
+
             return Response::json(
 				[
 					'success' => true,
                     'info' => '注册成功, 正在引导登入',
                     'userid' => $user['id'],
                     'username' => $user['username'],
+                    'avatar' => $profile['avatar'],
                     'needverify' => true,
                     'token' => $token
 				]
@@ -170,11 +178,6 @@ class SignUpController extends Controller
         ]);
 
         if($user->wasRecentlyCreated){
-            $tmp = json_decode(json_encode($user), True);
-            \DB::table('users_profile')->insertGetId(
-                ['username' => $tmp['username']]
-            );
-
             $avatar = get_avatar($user->id);
             $resource = 'avatar/'.$avatar;
             $background = RandomColor::one(array('format'=>'hex','hue'=>array('blue', 'purple','red') ));
@@ -182,7 +185,7 @@ class SignUpController extends Controller
             $IA = new InitialAvatar();
             $new_avatar = $IA
                 ->autoFont()
-                ->name($tmp['username'])
+                ->name($user->username)
                 ->background($background)
                 ->size(180)
                 ->fontSize(0.35)
@@ -193,12 +196,16 @@ class SignUpController extends Controller
             $path = public_path().'/uploads/avatars/'.$avatar;
             $Image->make($new_avatar)->resize(180, 180)->save($path, 100);
             $result = Storage::put( $resource, file_get_contents( $path ) );
+            \DB::table('users')
+                ->where('id', $user['id'])
+                ->update(
+                    ['avatar' => $avatar]
+                );
+            \DB::table('users_profile')
+                ->insert(
+                    ['id' => $user->id]
+                );
             if($result) {
-                \DB::table('users_profile')
-                    ->where('id', $tmp['id'])
-                    ->update([
-                        'avatar' => $avatar
-                    ]);
                 @unlink( $path );
             }
         }

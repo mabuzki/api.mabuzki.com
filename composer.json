@@ -21,6 +21,7 @@
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "lasserafn/php-initial-avatar-generator": "^3.0",
+        "mews/purifier": "^2.1",
         "mistic100/randomcolor": "^1.0",
         "nesbot/carbon": "2.5.1 as 1.34.0",
         "tymon/jwt-auth": "^1.0"

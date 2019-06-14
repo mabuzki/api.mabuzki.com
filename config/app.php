@@ -181,6 +181,7 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         Jacobcyl\AliOSS\AliOssServiceProvider::class,
+		Mews\Purifier\PurifierServiceProvider::class
         //leez
 
     ],

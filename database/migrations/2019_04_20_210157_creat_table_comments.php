@@ -21,8 +21,6 @@ class CreatTableComments extends Migration
             $table->string('author');
             $table->string('authorid');
             $table->mediumText('comment');
-
-            $table->string('tags');
             
             $table->string('favtimes')->default(0);
             $table->string('replynum')->default(0);
